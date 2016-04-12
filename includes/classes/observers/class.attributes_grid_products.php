@@ -31,9 +31,6 @@ class attributes_grid_products extends base {
     $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP'; // Keep
     $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT'; // keep
 
-/* Need to add/modify code to support:    
-*/
-  
 //    $zco_notifier->attach($this, $attachNotifier); 
     $this->attach($this, $attachNotifier);
     
@@ -56,7 +53,6 @@ class attributes_grid_products extends base {
     if ($this->_products_options_names_current == $this->_products_options_names_count) {
       $this->_products_options_names_current = 0;
     }
-
   }
 
   /*
@@ -84,70 +80,67 @@ class attributes_grid_products extends base {
       if (!defined('PRODUCTS_OPTIONS_TYPE_GRID')) {// || !defined('CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED') || CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED != 'true') {
         $products_options_types_name = 'Grid';
 
-        /*if (!defined('PRODUCTS_OPTIONS_TYPE_GRID'))*/ {
-
-          $sql = "SELECT products_options_types_name, products_options_types_id FROM " . TABLE_PRODUCTS_OPTIONS_TYPES . " WHERE 
+        $sql = "SELECT products_options_types_name, products_options_types_id FROM " . TABLE_PRODUCTS_OPTIONS_TYPES . " WHERE 
             products_options_types_name = :products_options_types_name: AND products_options_types_name != '';";
-          $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
+        $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
+        $result = $db->Execute($sql);
+
+        if ($result !== false && $result->RecordCount() > 0) {
+          // Is found, reassign $resultGID to found value.
+          $resultGID = $result->fields['products_options_types_id'];
+        } else {
+          $sql = "SELECT pot.products_options_types_id, pot.products_options_types_name
+                  FROM ".TABLE_PRODUCTS_OPTIONS_TYPES." pot  
+                  order by pot.products_options_types_id desc limit 1";
           $result = $db->Execute($sql);
 
-          if ($result !== false && $result->RecordCount() > 0) {
-            // Is found, reassign $resultGID to found value.
-            $resultGID = $result->fields['products_options_types_id'];
-          } else {
-            $sql = "SELECT pot.products_options_types_id, pot.products_options_types_name
-          FROM ".TABLE_PRODUCTS_OPTIONS_TYPES." pot  
-          order by pot.products_options_types_id desc limit 1";
-            $result = $db->Execute($sql);
+          $resultGID = $result->fields['products_options_types_id'] + 1;
 
-            $resultGID = $result->fields['products_options_types_id'] + 1;
+          $sql = "INSERT INTO ".TABLE_PRODUCTS_OPTIONS_TYPES." (`products_options_types_id`, `products_options_types_name`) 
+                  VALUES (:resultGID:, :products_options_types_name:);";
+          $sql = $db->bindVars($sql, ':resultGID:', $resultGID, 'integer');
+          $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
 
-            $sql = "INSERT INTO ".TABLE_PRODUCTS_OPTIONS_TYPES." (`products_options_types_id`, `products_options_types_name`) 
-          VALUES (:resultGID:, :products_options_types_name:);";
-            $sql = $db->bindVars($sql, ':resultGID:', $resultGID, 'integer');
-            $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
+          $result = $db->Execute($sql);
+        }
 
-            $result = $db->Execute($sql);
-          }
-
-          if( $result !== false /*&& $result->fields['products_options_types_name'] !=  ''*/ ){
+        if( $result !== false /*&& $result->fields['products_options_types_name'] !=  ''*/ ){
 // PRODUCT_TYPE_ATTRIBUTE_OPTION_GRID was the "old" version.
-            $configuration_title = 'Selection list product option type (Grid)';
-            $configuration_key = 'PRODUCTS_OPTIONS_TYPE_GRID';
-            $configuration_value = $resultGID;
-            $configuration_description = 'Numeric value of the grid product option type used for SBA';
-            $configuration_group_id = 6;
-            $sort_order = 0;
-            $last_modified = 'NULL';
-            $date_added = 'now()';
-            $use_function = 'NULL';
-            $set_function = 'NULL';
+          $configuration_title = 'Selection list product option type (Grid)';
+          $configuration_key = 'PRODUCTS_OPTIONS_TYPE_GRID';
+          $configuration_value = $resultGID;
+          $configuration_description = 'Numeric value of the grid product option type used for SBA';
+          $configuration_group_id = 6;
+          $sort_order = 0;
+          $last_modified = 'NULL';
+          $date_added = 'now()';
+          $use_function = 'NULL';
+          $set_function = 'NULL';
 
 
-            $sql = "INSERT INTO " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value,
+          $sql = "INSERT INTO " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value,
       configuration_description, configuration_group_id, sort_order, last_modified, date_added, use_function, set_function)
         
       VALUES
       (:configuration_title:, :configuration_key:, :configuration_value:, 
         :configuration_description:,
         :configuration_group_id:, :sort_order:, :last_modified:, :date_added:, :use_function:, :set_function:);";
-            $sql = $db->bindVars($sql, ':configuration_title:', $configuration_title, 'string');
-            $sql = $db->bindVars($sql, ':configuration_key:', $configuration_key, 'string');
-            $sql = $db->bindVars($sql, ':configuration_value:', $configuration_value, 'integer');
-            $sql = $db->bindVars($sql, ':configuration_description:', $configuration_description, 'string');
-            $sql = $db->bindVars($sql, ':configuration_group_id:', $configuration_group_id, 'integer');
-            $sql = $db->bindVars($sql, ':sort_order:', $sort_order, 'integer');
-            $sql = $db->bindVars($sql, ':last_modified:', $last_modified, (($last_modified == 'now()' || $last_modified == 'NULL') ? 'noquotestring' : 'string'));
-            $sql = $db->bindVars($sql, ':date_added:', $date_added, (($date_added == 'now()' || $date_added == 'NULL') ? 'noquotestring' : 'string'));
-            $sql = $db->bindVars($sql, ':use_function:', $use_function, (($use_function == 'now()' || $use_function == 'NULL') ? 'noquotestring' : 'string'));
-            $sql = $db->bindVars($sql, ':set_function:', $set_function, (($set_function == 'now()' || $set_function == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':configuration_title:', $configuration_title, 'string');
+          $sql = $db->bindVars($sql, ':configuration_key:', $configuration_key, 'string');
+          $sql = $db->bindVars($sql, ':configuration_value:', $configuration_value, 'integer');
+          $sql = $db->bindVars($sql, ':configuration_description:', $configuration_description, 'string');
+          $sql = $db->bindVars($sql, ':configuration_group_id:', $configuration_group_id, 'integer');
+          $sql = $db->bindVars($sql, ':sort_order:', $sort_order, 'integer');
+          $sql = $db->bindVars($sql, ':last_modified:', $last_modified, (($last_modified == 'now()' || $last_modified == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':date_added:', $date_added, (($date_added == 'now()' || $date_added == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':use_function:', $use_function, (($use_function == 'now()' || $use_function == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':set_function:', $set_function, (($set_function == 'now()' || $set_function == 'NULL') ? 'noquotestring' : 'string'));
 
-            $db->Execute($sql);
-          }
-          define('PRODUCTS_OPTIONS_TYPE_GRID', $resultGID);
+          $db->Execute($sql);
         }
-      }
 
+        define('PRODUCTS_OPTIONS_TYPE_GRID', $resultGID);
+      }
 
       $sql     = "select patrib.options_id, popt.products_options_type 
                 from " . TABLE_PRODUCTS_OPTIONS . " popt 
@@ -197,29 +190,33 @@ class attributes_grid_products extends base {
         $products_options_names2 = $db->Execute($sql);
 
         $show_only_grid = ($check_attributes_count == $products_options_names2->RecordCount());
+
         for($d=0; $d < 2; $d++) {
           $rd = ($rd != 'V' ? 'V' : 'H');
           if ($products_options_names2->RecordCount() == $d) {
             $grid_records[$rd] = array(  'id'    =>  '',
                 'name'    =>  TEXT_ATTRIBUTE_GRID_QTY,
                 'comment'  =>  '',
-                'options'  =>  array(array(  'id'      =>  '',
-                    'name'      =>  '',
-                    'price'      =>  '0',
-                    'price_prefix'  =>  '',
-                    'weight'    =>  '0',
-                    'weight_prefix'  =>  '',
-                    'discounted'  =>  '0',
-                    'image'      =>  '',
-                    'base_price'  =>  '0',
-                    'required'    =>  '0',
-                    'display'    =>  '1'
-                )
+                'options'  =>  array(
+                    array(
+                        'id'      =>  '',
+                        'name'      =>  '',
+                        'price'      =>  '0',
+                        'price_prefix'  =>  '',
+                        'weight'    =>  '0',
+                        'weight_prefix'  =>  '',
+                        'discounted'  =>  '0',
+                        'image'      =>  '',
+                        'base_price'  =>  '0',
+                        'required'    =>  '0',
+                        'display'    =>  '1'
+                    )
                 ),
                 'images'  =>  false
             );
           } else {
-            $grid_records[$rd] = array(  'id'    =>  $products_options_names2->fields['products_options_id'],
+            $grid_records[$rd] = array(
+                'id'    =>  $products_options_names2->fields['products_options_id'],
                 'name'    =>  $products_options_names2->fields['products_options_name'],
                 'comment'  =>  $products_options_names2->fields['products_options_comment'],
                 'options'  =>  array(),
@@ -238,10 +235,12 @@ class attributes_grid_products extends base {
           and       pa.options_values_id = pov.products_options_values_id
           and       pov.language_id = '" . (int)$_SESSION['languages_id'] . "' " .
                 $order_by;
+
             $products_options2 = $db->Execute($sql);
+
             while (!$products_options2->EOF) {
-              $grid_records[$rd]['options'][] = array(  'id'      =>
-                  $products_options2->fields['products_options_values_id'],
+              $grid_records[$rd]['options'][] = array(
+                  'id'      =>    $products_options2->fields['products_options_values_id'],
                   'name'      =>  $products_options2->fields['products_options_values_name'],
                   'price'      =>  $products_options2->fields['options_values_price'],
                   'price_prefix'  =>  $products_options2->fields['price_prefix'],
@@ -253,16 +252,20 @@ class attributes_grid_products extends base {
                   'required'    =>  $products_options2->fields['attributes_required'],
                   'display'    =>  $products_options2->fields['display_only']
               );
+
               if (zen_not_null($products_options2->fields['attributes_image'])) {
                 $grid_records[$rd]['images'] = true;
               }
+
               $products_options2->MoveNext();
             }
           }
+
           if (!$products_options_names2->EOF) {
             $products_options_names2->MoveNext();
           }
         }
+
         $grh_size = sizeof($grid_records['H']['options']);
         $grv_size = sizeof($grid_records['V']['options']);
 
@@ -275,6 +278,7 @@ class attributes_grid_products extends base {
         } else {
           $top_rowspan = 1;
         }
+
         if (($grv_size > 1) || zen_not_null($grid_records['V']['options'][0]['name'])) {
           $top_colspan = 2;
         } else {
@@ -289,6 +293,7 @@ class attributes_grid_products extends base {
         '<br />' . '<span id="attrib-grid-opt-commentV">'.$grid_records['V']['comment'].'</span>' 
         : 
         '');
+
         $this->_attrib_grid .='</td>'."\n";
         // BOF (Qty Avail) Left of Quantity display
         $this->_attrib_grid .= ($show_price_with_option_value == true ? '' : '<td>Price</td>');
@@ -307,8 +312,7 @@ class attributes_grid_products extends base {
           if (($grh_size > 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
             $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
-
-// Show price based on store settings - JT modification
+            // Show price based on store settings - JT modification
             $attrib_h_price = $grid_records['H']['options'][$grv]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']);
             $attrib_h_store_price = $this->price_display_logged_in($grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']));
             
@@ -325,13 +329,13 @@ class attributes_grid_products extends base {
                 $this->_attrib_grid .= ($grid_records['H']['options'][$grh]['price'] != 0 ? '</td><td class="attrib-grid-header-price"><a href="'.zen_href_link(FILENAME_LOGIN).'">' . $attrib_h_store_price . '</a>' : '</td><td class="attrib-grid-header-price"><a href="'.zen_href_link(FILENAME_LOGIN).'">' . $attrib_h_store_price . '</a>');
               }
             }
-// End show price
+            // End show price
 
             $this->_attrib_grid .= '</td>';
           }
         }
 
-        if ((($grh_size > 1) /*|| zen_not_null($grid_records['H']['options'][0]['name'])*/)) {
+        if (($grh_size > 1) /*|| zen_not_null($grid_records['H']['options'][0]['name'])*/) {
           $this->_attrib_grid .= '</tr>'."\n";
         }
 
@@ -340,7 +344,7 @@ class attributes_grid_products extends base {
           if (($grv_size > 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
             $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
-// Show price based on store settings - JT modification
+            // Show price based on store settings - JT modification
             $attrib_v_price = $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']);
             $attrib_v_store_price = $this->price_display_logged_in($grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']));
             
@@ -357,7 +361,7 @@ class attributes_grid_products extends base {
                 $this->_attrib_grid .= ($grid_records['V']['options'][$grv]['price'] != 0 ? '</td><td class="attrib-grid-header-price"><a href="'.zen_href_link(FILENAME_LOGIN).'">' . $attrib_v_store_price . '</a>' : '</td><td class="attrib-grid-header-price"><a href="'.zen_href_link(FILENAME_LOGIN).'">' . $attrib_v_store_price . '</a>');
               }
             }
-// End show price
+            // End show price
 
             $this->_attrib_grid .= '</td>'."\n";
           }
@@ -372,6 +376,7 @@ class attributes_grid_products extends base {
             );
             $products_attribs_id = zen_get_uprid((int)$_GET['products_id'], $attributes_ids);
             $attribute_stock = 'notset';
+
             if ($attribute_stock_controlled && ($show_attribute_out_of_stock || $show_attribute_stock)) {
               $out_of_stock_button = zen_image_button('attribute_out_of_stock.gif', ALT_ATTRIBUTE_GRID_OUT_OF_STOCK);
               $stock_check_array = array();
@@ -379,7 +384,9 @@ class attributes_grid_products extends base {
               if (zen_not_null($grid_records['V']['options'][$grv]['name'])) $stock_check_array[] = $grid_records['V']['options'][$grv]['id'];
               $attribute_stock = zen_get_products_stock($_GET['products_id'], $stock_check_array);
             }
+
             $this->_attrib_grid .= '<td class="attrib-grid-cell" id="attrib-grid-cell-'.$grid_records['H']['options'][$grh]['id'].'-'.$grid_records['V']['options'][$grv]['id'].'">';
+
             switch(true) {
               case ($show_attribute_out_of_stock && (float)$attribute_stock <= 0.0):
                 $this->_attrib_grid .=  $out_of_stock_button;
@@ -396,6 +403,7 @@ class attributes_grid_products extends base {
                 $this->_attrib_grid .=  zen_draw_input_field('product_id['.$products_attribs_id.']', '', 'size="3" value="0"').
                     zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['H']['id'].']', $grid_records['H']['options'][$grh]['id']).
                     zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['V']['id'].']', $grid_records['V']['options'][$grv]['id']);
+
                 if ($show_attribute_stock == true && $show_attribute_stock_left == false) {
                   $this->_attrib_grid .= ($grh_size > 1 ? '' : '</td><td>' ) . ' <span class="attrb-stock-right">'.
                     (($attribute_stock_text == $attribute_stock) ?
@@ -407,6 +415,7 @@ class attributes_grid_products extends base {
             }
             $this->_attrib_grid .= '</td>';
           }
+
           if ($grid_records['V']['images'] == true) {
             $this->_attrib_grid .= '<td class="attrib-grid-vImages" id="attrib-grid-vImages-'.$grid_records['V']['options'][$grv]['id'].'">';
             if (zen_not_null($grid_records['V']['options'][$grv]['image'])) {
@@ -416,6 +425,7 @@ class attributes_grid_products extends base {
           }
           $this->_attrib_grid .= '</tr>'."\n";
         }
+
         if ($grid_records['H']['images'] == true) {
           $this->_attrib_grid .= '<tr>'."\n" .
               '  <td></td>';
@@ -426,9 +436,11 @@ class attributes_grid_products extends base {
             }
             $this->_attrib_grid .= '</td>';
           }
+
           if ($grid_records['V']['images'] == true) {
             $this->_attrib_grid .= '  <td></td>';
           }
+
           $this->_attrib_grid .= '</tr>';
         }
         $this->_attrib_grid .= '</table>'."\n";
@@ -441,9 +453,8 @@ class attributes_grid_products extends base {
    * 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH';
    */
   function updateNotifyAttributesModuleDefaultSwitch(&$callingClass, $notifier, $products_options_names_fields, &$options_name, &$options_menu, &$options_comment, &$options_comment_position, &$options_html_id){
-    //global $attrib_grid;
 
-          switch (true) {
+    switch (true) {
 /****************************************************
 /* Absolute-Solutions.co.uk Edit
 /*
@@ -474,14 +485,13 @@ class attributes_grid_products extends base {
     }
   }
 
-  
   /*
    * Return the alternate text if prices should not be shown otherwise return the text for the price.
    */
   function price_display_logged_in($price_text) {
     // 0 = normal shopping
-// 1 = Login to shop
-// 2 = Can browse but no prices
+    // 1 = Login to shop
+    // 2 = Can browse but no prices
     // verify display of prices
     switch (true) {
       case (CUSTOMERS_APPROVAL == '1' and $_SESSION['customer_id'] == ''):
@@ -527,7 +537,8 @@ class attributes_grid_products extends base {
    * Generic function that is activated when any notifier identified in the observer is called but is not found in one of the above previous specific update functions is encountered as a notifier.
    */
   function update(&$callingClass, $notifier, $paramsArray) {
-  global $db;
+    global $db;
+
     if ($notifier == 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP') {
       global $products_options_fields;
       $this->updateNotifyAttributesModuleStartOptionsLoop($callingClass, $notifier, $paramsArray, $products_options_fields);
@@ -548,7 +559,5 @@ class attributes_grid_products extends base {
       
       $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
     }
-    
   } //end update function - mc12345678
 } //end class - mc12345678
-
