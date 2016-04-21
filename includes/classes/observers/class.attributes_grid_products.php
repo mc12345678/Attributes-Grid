@@ -88,26 +88,32 @@ class attributes_grid_products extends base {
         $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
         $result = $db->Execute($sql);
 
-        if ($result !== false && $result->RecordCount() > 0) {
+        if (!$result->EOF && $result->RecordCount() > 0) {
           // Is found, reassign $resultGID to found value.
           $resultGID = $result->fields['products_options_types_id'];
+          // $result = true; // Reassign the variable to true to indicate that successfully found a previous $products_options_types_name.
         } else {
           $sql = "SELECT pot.products_options_types_id, pot.products_options_types_name
                   FROM ".TABLE_PRODUCTS_OPTIONS_TYPES." pot  
                   order by pot.products_options_types_id desc limit 1";
           $result = $db->Execute($sql);
 
-          $resultGID = $result->fields['products_options_types_id'] + 1;
+          if (!$result->EOF && $result->RecordCount() > 0)
+          {
+            $resultGID = $result->fields['products_options_types_id'] + 1;
+          } else { // Apparently the table for products_options_types_id has been cleared.
+            $resultGID = 6; // Assign the next products_options_types_id after the default ZC products_options_types_id.
+          }
 
           $sql = "INSERT INTO ".TABLE_PRODUCTS_OPTIONS_TYPES." (`products_options_types_id`, `products_options_types_name`) 
                   VALUES (:resultGID:, :products_options_types_name:);";
           $sql = $db->bindVars($sql, ':resultGID:', $resultGID, 'integer');
           $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
 
-          $result = $db->Execute($sql);
+          $result = $db->Execute($sql); // Returns true if successful insert and false if not.
         }
 
-        if( $result !== false /*&& $result->fields['products_options_types_name'] !=  ''*/ ){
+        if($result !== false /*&& $result->fields['products_options_types_name'] !=  ''*/ ){
 // PRODUCT_TYPE_ATTRIBUTE_OPTION_GRID was the "old" version.
           $configuration_title = 'Selection list product option type (Grid)';
           $configuration_key = 'PRODUCTS_OPTIONS_TYPE_GRID';
