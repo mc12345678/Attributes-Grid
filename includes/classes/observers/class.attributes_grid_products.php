@@ -373,7 +373,7 @@ class attributes_grid_products extends base {
           }
 
           $attribute_stock_controlled = (defined('TABLE_PRODUCTS_WITH_ATTRIBUTES_STOCK') && $show_only_grid);
-          $show_attribute_stock = ($attribute_stock_controlled && zen_get_show_product_switch($_GET['products_id'], 'quantity') == 1);
+          $show_attribute_stock = ($attribute_stock_controlled && (zen_get_show_product_switch($_GET['products_id'], 'quantity') == 1 || defined('STOCK_SHOW_ATTRIB_LEVEL_STOCK') && STOCK_SHOW_ATTRIB_LEVEL_STOCK == 'true')); // Displays quantity of attributes if SBA setup to show them or if the product type supports showing the total quantity of product in stock.
           $show_attribute_out_of_stock = ($attribute_stock_controlled && SHOW_PRODUCTS_SOLD_OUT_IMAGE == '1');
 
           for($grh=0; $grh < $grh_size; $grh++) {
