@@ -38,7 +38,9 @@ class attributes_grid_products extends base {
     
     $this->_products_options_names_current = 0; // Initialize this variable to 0.
     $this->_attrib_grid = '';
-    $this->_contact_us_value = array(149); // 8
+    $this->_contact_us_value = array();
+    $this->_contact_us_value['enabled'] = false;
+    $this->_contact_us_value[] = array('1650'); // '8' option value id as a string that is to contain the contact_us button.
   }  
 
 
@@ -71,7 +73,7 @@ class attributes_grid_products extends base {
       global $currencies;
 
       $show_attribute_stock_left = true;
-      $show_price_with_option_value = false;
+      $show_price_with_option_value = true;
 
       /****************************************************
       /* Absolute-Solutions.co.uk Edit
@@ -91,7 +93,6 @@ class attributes_grid_products extends base {
         if (!$result->EOF && $result->RecordCount() > 0) {
           // Is found, reassign $resultGID to found value.
           $resultGID = $result->fields['products_options_types_id'];
-          // $result = true; // Reassign the variable to true to indicate that successfully found a previous $products_options_types_name.
         } else {
           $sql = "SELECT pot.products_options_types_id, pot.products_options_types_name
                   FROM ".TABLE_PRODUCTS_OPTIONS_TYPES." pot  
@@ -262,9 +263,9 @@ class attributes_grid_products extends base {
                   'display'    =>  $products_options2->fields['display_only']
               );
               
-              if (in_array($grid_records[$rd]['options'][sizeof($grid_records[$rd]['options'])-1]['id'], $this->_contact_us_value)) {
-                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['price'] = '<a href="' . zen_href_link(FILENAME_ASK_A_QUESTION, 'products_id=' . $_GET['products_id']) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
-//                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['name'] = '<a href="' . zen_href_link(FILENAME_CONTACT_US) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
+              if ($this->_contact_us_value['enabled'] && in_array(array($grid_records[$rd]['options'][sizeof($grid_records[$rd]['options'])-1]['id']), $this->_contact_us_value, true)) {
+//                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['price'] = '<a href="' . zen_href_link(FILENAME_ASK_A_QUESTION, 'products_id=' . $_GET['products_id']) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
+                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['name'] = '<a href="' . zen_href_link(FILENAME_CONTACT_US) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
               }
 
               if (zen_not_null($products_options2->fields['attributes_image'])) {
@@ -327,7 +328,7 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
             // Show price based on store settings - JT modification
-            if (!in_array($grid_records['H']['options'][$grh]['id'], $this->_contact_us_value)) {
+            if (!$this->_contact_us_value['enabled'] || ($this->_contact_us_value['enabled'] && !in_array(array($grid_records['H']['options'][$grh]['id']), $this->_contact_us_value, true))) {
               $attrib_h_price = $grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']);
               $attrib_h_store_price = $this->price_display_logged_in($grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']));
             } else {
@@ -364,7 +365,7 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
             // Show price based on store settings - JT modification
-            if (!in_array($grid_records['V']['options'][$grv]['id'], $this->_contact_us_value)) {
+            if (!$this->_contact_us_value['enabled'] || ($this->_contact_us_value['enabled'] && !in_array(array($grid_records['V']['options'][$grv]['id']), $this->_contact_us_value, true))) {
               $attrib_v_price = $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']);
               $attrib_v_store_price = $this->price_display_logged_in($grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']));
             } else {
@@ -412,10 +413,10 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '<td class="attrib-grid-cell" id="attrib-grid-cell-'.$grid_records['H']['options'][$grh]['id'].'-'.$grid_records['V']['options'][$grv]['id'].'">';
 
             switch(true) {
-              case (in_array($grid_records['H']['options'][$grh]['id'], $this->_contact_us_value)):
+              case ($this->_contact_us_value['enabled'] && in_array(array($grid_records['H']['options'][$grh]['id']), $this->_contact_us_value, true)):
                 $this->_attrib_grid .= $grid_records['H']['options'][$grh]['price'];
                 break;
-              case (in_array($grid_records['V']['options'][$grv]['id'], $this->_contact_us_value)):
+              case ($this->_contact_us_value['enabled'] && in_array(array($grid_records['V']['options'][$grv]['id']), $this->_contact_us_value, true)):
                 $this->_attrib_grid .= $grid_records['V']['options'][$grv]['price'];
                 break;
               case ($show_attribute_out_of_stock && (float)$attribute_stock <= 0.0):
