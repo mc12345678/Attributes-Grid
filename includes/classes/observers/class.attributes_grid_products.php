@@ -18,6 +18,8 @@ class attributes_grid_products extends base {
   private $_products_options_names_current;
   
   private $_attrib_grid;
+  
+  private $_contact_us_value; // Used to display the contact us link.
 
   
   /*
@@ -36,6 +38,7 @@ class attributes_grid_products extends base {
     
     $this->_products_options_names_current = 0; // Initialize this variable to 0.
     $this->_attrib_grid = '';
+    $this->_contact_us_value = array(149); // 8
   }  
 
 
@@ -252,6 +255,11 @@ class attributes_grid_products extends base {
                   'required'    =>  $products_options2->fields['attributes_required'],
                   'display'    =>  $products_options2->fields['display_only']
               );
+              
+              if (in_array($grid_records[$rd]['options'][sizeof($grid_records[$rd]['options'])-1]['id'], $this->_contact_us_value)) {
+                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['price'] = '<a href="' . zen_href_link(FILENAME_ASK_A_QUESTION, 'products_id=' . $_GET['products_id']) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
+//                $grid_records[$rd]['options'][sizeof($grid_records[$rd]['options']) - 1]['name'] = '<a href="' . zen_href_link(FILENAME_CONTACT_US) . '" >' . TEXT_ATTRIBUTE_GRID_CONTACT_US . '</a>';
+              }
 
               if (zen_not_null($products_options2->fields['attributes_image'])) {
                 $grid_records[$rd]['images'] = true;
@@ -313,12 +321,17 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
             // Show price based on store settings - JT modification
-            $attrib_h_price = $grid_records['H']['options'][$grv]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']);
-            $attrib_h_store_price = $this->price_display_logged_in($grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']));
+            if (!in_array($grid_records['H']['options'][$grh]['id'], $this->_contact_us_value)) {
+              $attrib_h_price = $grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']);
+              $attrib_h_store_price = $this->price_display_logged_in($grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']));
+            } else {
+              $attrib_h_price = $grid_records['H']['options'][$grh]['price'] + 1;
+              $attrib_h_store_price = $grid_records['H']['options'][$grh]['price'];
+            }
             
             if ($attrib_h_price == $attrib_h_store_price) {
               if ($show_price_with_option_value == true) {
-                $this->_attrib_grid .= ($grid_records['H']['options'][$grh]['price'] != 0 ? '<br /><span class="attrib-grid-header-price">'. $grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']) .'</span>' : '<br /><span class="attrib-grid-header-price">' . '</span>');
+                $this->_attrib_grid .= ($grid_records['H']['options'][$grh]['price'] != 0 ? '<br /><span class="attrib-grid-header-price">'. $attrib_h_price .'</span>' : '<br /><span class="attrib-grid-header-price">' . '</span>');
               } else {
                 $this->_attrib_grid .= ($grid_records['H']['options'][$grh]['price'] != 0 ? '</td><td class="attrib-grid-header-price">'. $grid_records['H']['options'][$grh]['price_prefix'].$currencies->format($grid_records['H']['options'][$grh]['price']) : '</td><td class="attrib-grid-header-price">' );
               }
@@ -345,14 +358,19 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
             // Show price based on store settings - JT modification
-            $attrib_v_price = $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']);
-            $attrib_v_store_price = $this->price_display_logged_in($grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']));
+            if (!in_array($grid_records['V']['options'][$grv]['id'], $this->_contact_us_value)) {
+              $attrib_v_price = $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']);
+              $attrib_v_store_price = $this->price_display_logged_in($grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']));
+            } else {
+              $attrib_v_price = $grid_records['V']['options'][$grv]['price'] + 1;
+              $attrib_v_store_price = $grid_records['V']['options'][$grv]['price'];
+            }
             
             if ($attrib_v_price == $attrib_v_store_price) {
               if ($show_price_with_option_value == true) {
-                $this->_attrib_grid .= ($grid_records['V']['options'][$grv]['price'] != 0 ? '<br /><span class="attrib-grid-header-price">'. $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']) .'</span>' : '<br /><span class="attrib-grid-header-price">' . '</span>');
+                $this->_attrib_grid .= ($grid_records['V']['options'][$grv]['price'] != 0 ? '<br /><span class="attrib-grid-header-price">'. $attrib_v_price .'</span>' : '<br /><span class="attrib-grid-header-price">' . '</span>');
               } else {
-                $this->_attrib_grid .= ($grid_records['V']['options'][$grv]['price'] != 0 ? '</td><td class="attrib-grid-header-price">'. $grid_records['V']['options'][$grv]['price_prefix'].$currencies->format($grid_records['V']['options'][$grv]['price']) : '</td><td class="attrib-grid-header-price">' );
+                $this->_attrib_grid .= ($grid_records['V']['options'][$grv]['price'] != 0 ? '</td><td class="attrib-grid-header-price">'. $attrib_v_price : '</td><td class="attrib-grid-header-price">' );
               }
             } else {
               if ($show_price_with_option_value == true) {
@@ -388,6 +406,12 @@ class attributes_grid_products extends base {
             $this->_attrib_grid .= '<td class="attrib-grid-cell" id="attrib-grid-cell-'.$grid_records['H']['options'][$grh]['id'].'-'.$grid_records['V']['options'][$grv]['id'].'">';
 
             switch(true) {
+              case (in_array($grid_records['H']['options'][$grh]['id'], $this->_contact_us_value)):
+                $this->_attrib_grid .= $grid_records['H']['options'][$grh]['price'];
+                break;
+              case (in_array($grid_records['V']['options'][$grv]['id'], $this->_contact_us_value)):
+                $this->_attrib_grid .= $grid_records['V']['options'][$grv]['price'];
+                break;
               case ($show_attribute_out_of_stock && (float)$attribute_stock <= 0.0):
                 $this->_attrib_grid .=  $out_of_stock_button;
                 break;
