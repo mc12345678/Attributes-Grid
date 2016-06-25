@@ -8,9 +8,56 @@
  * @version $Id: Author: mc12345678  Fri Jan 8 15:34:24 2016 -0500 Modified in v1.5.5 $
  */
 
-#attrib-grid-table tr {
-  border-style: solid;
-  border-left: none;
-  border-right: none;
-  border-color: #000099;
+h1.productGeneral {
+  color: #000099;
+}
+
+
+.wrapperAttribsOptions > .back {
+  float: none;
+}
+
+#attrib-grid-table {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+#productGeneral ul {
+  margin-left: auto;
+  margin-right: auto;
+}
+#productDetailsList {
+  float: none;
+  margin: 24px;
+}
+#productMainImage {
+  border: 1px solid #000000;
+  float: left;
+  margin: 1em;
+  padding: 1em;
+}
+
+#cartAdd {
+  border: none;
+  float: left;
+  margin: 0 1em 1em 0;
+  padding: 1em 10px 1em 1em;
+  text-align: center;
+}
+
+#productDescription {
+  float: left;
+}
+
+.attrib-grid-cell > input {
+  text-align: center;
+}
+
+#attrib-grid-table input {
+  text-align: center;
+}
+
+#cartAdd input[name="cart_quantity"] {
+  display: none;
 }
