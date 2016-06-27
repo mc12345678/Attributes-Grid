@@ -86,7 +86,7 @@ class attributes_grid_products extends base {
         $sql = "SELECT products_options_types_name, products_options_types_id FROM " . TABLE_PRODUCTS_OPTIONS_TYPES . " WHERE 
             products_options_types_name = :products_options_types_name: AND products_options_types_name != '';";
         $sql = $db->bindVars($sql, ':products_options_types_name:', $products_options_types_name, 'string');
-        $result = $db->Execute($sql);
+        $result = $db->Execute($sql, false, false, 0, true);
 
         if (!$result->EOF && $result->RecordCount() > 0) {
           // Is found, reassign $resultGID to found value.
@@ -95,7 +95,7 @@ class attributes_grid_products extends base {
           $sql = "SELECT pot.products_options_types_id, pot.products_options_types_name
                   FROM ".TABLE_PRODUCTS_OPTIONS_TYPES." pot  
                   order by pot.products_options_types_id desc limit 1";
-          $result = $db->Execute($sql);
+          $result = $db->Execute($sql, false, false, 0, true);
 
           if (!$result->EOF && $result->RecordCount() > 0)
           {
