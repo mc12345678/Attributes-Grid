@@ -39,6 +39,9 @@ class attributes_grid_products extends base {
     $this->_contact_us_value = array();
     $this->_contact_us_value['enabled'] = false;
     $this->_contact_us_value[] = array('1650'); // option value id as an array of strings that is to contain the contact_us button.
+    $this->_quantity_limit = array();
+    $this->_quantity_limit['enabled'] = false; // expected to provide either a true or false value
+    $this->_quantity_limit['max'] = 5; // Anything greater than this will display as > the value entered.
   }  
 
 
@@ -425,7 +428,7 @@ class attributes_grid_products extends base {
                 if ($show_attribute_stock == true && $show_attribute_stock_left == true) {
                   $this->_attrib_grid .= ' <span class="attrb-stock-left">'.
                      (($attribute_stock_text == $attribute_stock/*($_SESSION['customer_id'] || CUSTOMERS_APPROVAL == '0'*/) ?
-                     sprintf(TEXT_ATTRIBUTE_GRID_IN_STOCK, ($attribute_stock > 5 ? ">5" : $attribute_stock)) 
+                     sprintf(TEXT_ATTRIBUTE_GRID_IN_STOCK, (($this->_quantity_limit['enabled'] && $attribute_stock > $this->_quantity_limit['max']) ? ">".$this->_quantity_limit['max'] : $attribute_stock)) 
                      : '<a href="'.zen_href_link(FILENAME_LOGIN).'"> Login </a>')
                           .'</span>' . ($grh_size > 1 ? '' : '</td><td>' );
                 }
@@ -436,7 +439,7 @@ class attributes_grid_products extends base {
                 if ($show_attribute_stock == true && $show_attribute_stock_left == false) {
                   $this->_attrib_grid .= ($grh_size > 1 ? '' : '</td><td>' ) . ' <span class="attrb-stock-right">'.
                     (($attribute_stock_text == $attribute_stock) ?
-                    sprintf(TEXT_ATTRIBUTE_GRID_IN_STOCK, ($attribute_stock > 5 ? ">5" : $attribute_stock))
+                    sprintf(TEXT_ATTRIBUTE_GRID_IN_STOCK, (($this->_quantity_limit['enabled'] && $attribute_stock > $this->_quantity_limit['max']) ? ">".$this->_quantity_limit['max'] : $attribute_stock))
                     : '<a href="' . zen_href_link(FILENAME_LOGIN) . '"> Login </a>')
                     .'</span>';
                 }
