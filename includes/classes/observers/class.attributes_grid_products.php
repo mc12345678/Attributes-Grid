@@ -26,21 +26,19 @@ class attributes_grid_products extends base {
    * This is the observer for the includes/classes/order.php file to support Stock By Attributes when the order is being processed at the end of the purchase.
    */
   function __construct() {
-    //global $zco_notifier;
     
     $attachNotifier = array();
-    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH'; // Keep
-    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP'; // Keep
-    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT'; // keep
+    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH'; 
+    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP'; 
+    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT'; 
 
-//    $zco_notifier->attach($this, $attachNotifier); 
     $this->attach($this, $attachNotifier);
     
     $this->_products_options_names_current = 0; // Initialize this variable to 0.
     $this->_attrib_grid = '';
     $this->_contact_us_value = array();
     $this->_contact_us_value['enabled'] = false;
-    $this->_contact_us_value[] = array('1650'); // '8' option value id as a string that is to contain the contact_us button.
+    $this->_contact_us_value[] = array('1650'); // option value id as an array of strings that is to contain the contact_us button.
   }  
 
 
