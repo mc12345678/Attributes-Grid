@@ -325,7 +325,7 @@ class attributes_grid_products extends base {
         // EOF This is the end of the headers for the table.
 
         for($grh=0; $grh < $grh_size; $grh++) {
-          if (($grh_size > 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
+          if (($grh_size >= 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
             $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
             // Show price based on store settings - JT modification
@@ -362,7 +362,7 @@ class attributes_grid_products extends base {
 
         for($grv=0; $grv < $grv_size; $grv++) {
           $this->_attrib_grid .= '<tr>'."\n";
-          if (($grv_size > 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
+          if (($grv_size >= 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
             $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
             // Show price based on store settings - JT modification
