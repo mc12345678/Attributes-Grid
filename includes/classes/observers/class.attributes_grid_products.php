@@ -343,7 +343,7 @@ class attributes_grid_products extends base {
 
         for($grh=0; $grh < $grh_size; $grh++) {
           if (($grh_size >= 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
-            $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
+            $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.(int)$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
             // Show price based on store settings - JT modification
             if (!$this->_contact_us_value['enabled'] || ($this->_contact_us_value['enabled'] && !in_array(array($grid_records['H']['options'][$grh]['id']), $this->_contact_us_value, true))) {
@@ -380,7 +380,7 @@ class attributes_grid_products extends base {
         for($grv=0; $grv < $grv_size; $grv++) {
           $this->_attrib_grid .= '<tr>'."\n";
           if (($grv_size >= 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
-            $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
+            $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.(int)$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
             // Show price based on store settings - JT modification
             if (!$this->_contact_us_value['enabled'] || ($this->_contact_us_value['enabled'] && !in_array(array($grid_records['V']['options'][$grv]['id']), $this->_contact_us_value, true))) {
@@ -423,12 +423,12 @@ class attributes_grid_products extends base {
             if ($attribute_stock_controlled && ($show_attribute_out_of_stock || $show_attribute_stock)) {
               $out_of_stock_button = zen_image_button('attribute_out_of_stock.gif', ALT_ATTRIBUTE_GRID_OUT_OF_STOCK);
               $stock_check_array = array();
-              if (zen_not_null($grid_records['H']['options'][$grh]['name'])) $stock_check_array[] = $grid_records['H']['options'][$grh]['id'];
-              if (zen_not_null($grid_records['V']['options'][$grv]['name'])) $stock_check_array[] = $grid_records['V']['options'][$grv]['id'];
+              if (zen_not_null($grid_records['H']['options'][$grh]['name'])) $stock_check_array[] = (int)$grid_records['H']['options'][$grh]['id'];
+              if (zen_not_null($grid_records['V']['options'][$grv]['name'])) $stock_check_array[] = (int)$grid_records['V']['options'][$grv]['id'];
               $attribute_stock = zen_get_products_stock($_GET['products_id'], $stock_check_array);
             }
 
-            $this->_attrib_grid .= '<td class="attrib-grid-cell" id="attrib-grid-cell-'.$grid_records['H']['options'][$grh]['id'].'-'.$grid_records['V']['options'][$grv]['id'].'">';
+            $this->_attrib_grid .= '<td class="attrib-grid-cell" id="attrib-grid-cell-'.(int)$grid_records['H']['options'][$grh]['id'].'-'.(int)$grid_records['V']['options'][$grv]['id'].'">';
 
             switch(true) {
               case ($this->_contact_us_value['enabled'] && in_array(array($grid_records['H']['options'][$grh]['id']), $this->_contact_us_value, true)):
@@ -450,8 +450,8 @@ class attributes_grid_products extends base {
                           .'</span>' . ($grh_size > 1 ? '' : '</td><td>' );
                 }
                 $this->_attrib_grid .=  zen_draw_input_field('product_id['.$products_attribs_id.']', '', 'size="3" value="0"').
-                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['H']['id'].']', $grid_records['H']['options'][$grh]['id']).
-                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['V']['id'].']', $grid_records['V']['options'][$grv]['id']);
+                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['H']['id'].']', (int)$grid_records['H']['options'][$grh]['id']).
+                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['V']['id'].']', (int)$grid_records['V']['options'][$grv]['id']);
 
                 if ($show_attribute_stock == true && $show_attribute_stock_left == false) {
                   $this->_attrib_grid .= ($grh_size > 1 ? '' : '</td><td>' ) . ' <span class="attrb-stock-right">'.
@@ -466,7 +466,7 @@ class attributes_grid_products extends base {
           }
 
           if ($grid_records['V']['images'] == true) {
-            $this->_attrib_grid .= '<td class="attrib-grid-vImages" id="attrib-grid-vImages-'.$grid_records['V']['options'][$grv]['id'].'">';
+            $this->_attrib_grid .= '<td class="attrib-grid-vImages" id="attrib-grid-vImages-'.(int)$grid_records['V']['options'][$grv]['id'].'">';
             if (zen_not_null($grid_records['V']['options'][$grv]['image'])) {
               $this->_attrib_grid .= zen_image(DIR_WS_IMAGES . $grid_records['V']['options'][$grv]['image']);
             }
@@ -479,7 +479,7 @@ class attributes_grid_products extends base {
           $this->_attrib_grid .= '<tr>'."\n" .
               '  <td></td>';
           for($grh=0; $grh < $grh_size; $grh++) {
-            $this->_attrib_grid .= '<td class="attrib-grid-hImages" id="attrib-grid-hImages-'.$grid_records['H']['options'][$grh]['id'].'">';
+            $this->_attrib_grid .= '<td class="attrib-grid-hImages" id="attrib-grid-hImages-'.(int)$grid_records['H']['options'][$grh]['id'].'">';
             if (zen_not_null($grid_records['H']['options'][$grh]['image'])) {
               $this->_attrib_grid .= zen_image(DIR_WS_IMAGES . $grid_records['H']['options'][$grh]['image']);
             }
