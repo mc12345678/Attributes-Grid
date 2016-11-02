@@ -54,6 +54,23 @@ class attributes_grid_products extends base {
                                                    &$options_comment_position, &$options_html_id,
                                                    &$options_attributes_image) {
 
+    global $products_options;
+    
+    if ($products_options->RecordCount() == 1 && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_GRID) {
+      array_pop($options_name);
+      array_pop($options_menu);
+      array_pop($options_comment);
+      array_pop($options_comment_position);
+      array_pop($options_html_id);
+      array_pop($options_attributes_image);  // This may need to be commented out because the $options_attributes_image variable is not addressed in the below called function and if it should remain associated with this attribute assignment as part of displaying the information.  
+      // With testing, (grid product having a single option value for each of a single option name, one single option value and one multiple option values and in conjunction with another non-grid attribute that displayed a picture.) it didn't seem to matter one way or the other.  
+      //   Flow pushes the attribute image to the $options_attributes_image array before coming to this notifier and does so for all attribute types.  
+      //   That said, it would seem that if the single option value option type were called upon and that images are in other ways addressed by the below code, then this array item should be popped off the set as well.
+      
+      $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
+    }
+    
+    
     // if at the last option name, then no further processing above and want to reset the
     // counter so that on the next use on this session it is zero.
     if ($this->_products_options_names_current == $this->_products_options_names_count) {
@@ -325,7 +342,7 @@ class attributes_grid_products extends base {
         // EOF This is the end of the headers for the table.
 
         for($grh=0; $grh < $grh_size; $grh++) {
-          if (($grh_size > 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
+          if (($grh_size >= 1) && zen_not_null($grid_records['H']['options'][$grh]['name'])) {
             $this->_attrib_grid .= '<td class="attrib-grid-hHeader" id="attrib-grid-hHeader-'.$grid_records['H']['options'][$grh]['id'].'">'.$grid_records['H']['options'][$grh]['name'];
 
             // Show price based on store settings - JT modification
@@ -362,7 +379,7 @@ class attributes_grid_products extends base {
 
         for($grv=0; $grv < $grv_size; $grv++) {
           $this->_attrib_grid .= '<tr>'."\n";
-          if (($grv_size > 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
+          if (($grv_size >= 1) && zen_not_null($grid_records['V']['options'][$grv]['name'])) {
             $this->_attrib_grid .= '  <td class="attrib-grid-vHeader" id="attrib-grid-vHeader-'.$grid_records['V']['options'][$grv]['id'].'">'.$grid_records['V']['options'][$grv]['name'];
 
             // Show price based on store settings - JT modification
