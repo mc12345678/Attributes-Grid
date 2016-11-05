@@ -83,7 +83,7 @@ $sql = "select count(*) as total
                 pa.options_values_price, pa.price_prefix,
                 pa.products_options_sort_order, pa.product_attribute_is_free, pa.products_attributes_weight, pa.products_attributes_weight_prefix,
                 pa.attributes_default, pa.attributes_discounted, pa.attributes_image
-				p.products_quantity
+        p.products_quantity
                 */
 
                 $sql = "select    pov.products_options_values_id,
@@ -657,11 +657,8 @@ $sql = "select count(*) as total
                 }
 
                 // attributes images table
-                // START "Stock by Attributes" SBA
-                if (!defined('SBA_SHOW_IMAGE_ON_PRODUCT_INFO') || SBA_SHOW_IMAGE_ON_PRODUCT_INFO != 'false') {
-                  $options_attributes_image[] = trim($tmp_attributes_image) . "\n";
-                }
-                // END "Stock by Attributes" SBA
+                $options_attributes_image[] = trim($tmp_attributes_image) . "\n";
+                
                 $zco_notifier->notify('NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT', $products_options_names->fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id, $options_attributes_image);
                 //Next Item
                 $products_options_names->MoveNext();
