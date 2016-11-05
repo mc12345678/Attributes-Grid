@@ -1,5 +1,5 @@
 Product Attribute Grid
-Version 1.2
+Version 1.3.2
 ZenCart 1.5
 ZenCart 1.5.4, 1.5.5
 
@@ -74,6 +74,23 @@ Files included in this install are:
 ==============================
 CHANGELOG
 ==============================
+
+1.3.2 11/04/16 - mc12345678 McNumbers Ware:
+        - Correct visual display when any one or more option name has only one option value.
+	- If an internal id is blank, then when generating the object id for javascript assign a zero (0).
+	- Add code associated with SBA to continue compatibility.
+	- Remove some code from the includes/modules/YOUR_TEMPLATE/attributes.php to restore to original/SBA related.
+	- Added possible functionality to provide a contact us line/item.
+	- Added ability to hide price based on user's requiring to be logged in.
+	- Added ability to obscure the actual number of available product greater than
+	   some chosen value.
+	- Incorporated possible use of displaying price at grid box instead of at option name's option value.
+	- Improved product processing to allow all ZC default attribute types to be used.
+	- For uploading files, it is possible to associate a single file for all "variants" or
+	   to provide one file for each product variation (grid option).
+	
+1.3.1 04/06/16 - mc12345678 McNumbers Ware
+        - Remove code that caused grid to appear twice when a grid contained two attributes.
 
 1.3   04/03/16 - mc12345678 McNumbers Ware
         - Operate with ZC 1.5.3+.
