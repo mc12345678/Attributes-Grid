@@ -66,6 +66,7 @@ class attributes_grid_products extends base {
       // With testing, (grid product having a single option value for each of a single option name, one single option value and one multiple option values and in conjunction with another non-grid attribute that displayed a picture.) it didn't seem to matter one way or the other.  
       //   Flow pushes the attribute image to the $options_attributes_image array before coming to this notifier and does so for all attribute types.  
       //   That said, it would seem that if the single option value option type were called upon and that images are in other ways addressed by the below code, then this array item should be popped off the set as well.
+      // This could maybe be commented out for 2 reasons: 1) images are not addressed in the below called function, and 2) if they need to be cleared they  will below.
       
       $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $products_options_names_fields, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
     }
@@ -90,7 +91,7 @@ class attributes_grid_products extends base {
     if ($this->_products_options_names_current == 1) {
       global $currencies;
 
-      $show_attribute_stock_left = true;
+      $show_attribute_stock_left = false;
       $show_price_with_option_value = true;
 
       /****************************************************
@@ -306,14 +307,14 @@ class attributes_grid_products extends base {
         $show_attribute_stock = ($attribute_stock_controlled && zen_get_show_product_switch($_GET['products_id'], 'quantity') == 1);
         $show_attribute_out_of_stock = ($attribute_stock_controlled && SHOW_PRODUCTS_SOLD_OUT_IMAGE == '1');
         
-        if (($grh_size > 1) || zen_not_null($grid_records['H']['options'][0]['name'])) {
+        if ($grh_size == 1 && zen_not_null($grid_records['H']['options'][0]['name'])) {
           $top_rowspan = 1;
         } else {
           $top_rowspan = 1;
         }
 
-        if (($grv_size > 1) || zen_not_null($grid_records['V']['options'][0]['name'])) {
-          $top_colspan = 2;
+        if ($grv_size == 1 && zen_not_null($grid_records['V']['options'][0]['name'])) {
+          $top_colspan = 1;
         } else {
           $top_colspan = 1;
         }
@@ -321,7 +322,7 @@ class attributes_grid_products extends base {
         // BOF This is the start of the headers for the table.
         $this->_attrib_grid = '<table id="attrib-grid-table">'."\n" .
             '<tr>'."\n".
-            '  <td colspan="1" rowspan="'.($top_rowspan).'" ' .($grh_size > 1 ? '' : 'id="attrib-grid-opt-nameV"') . '>'.($grh_size > 1 ? '' : $grid_records['V']['name']);
+            '  <td colspan="1" rowspan="'.($top_rowspan).'" ' .($grh_size >= 1 ? '' : 'id="attrib-grid-opt-nameV"') . '>'.($grh_size >= 1 ? '' : $grid_records['V']['name']);
         $this->_attrib_grid .= (zen_not_null($grid_records['V']['comment']) ? 
         '<br />' . '<span id="attrib-grid-opt-commentV">'.$grid_records['V']['comment'].'</span>' 
         : 
@@ -335,7 +336,7 @@ class attributes_grid_products extends base {
             '<td colspan="'.(sizeof($grid_records['H']['options'])-($grh_size > 1 ? 0: 1)).'" id="attrib-grid-opt-nameH">'.$grid_records['H']['name'].(zen_not_null($grid_records['H']['comment']) ? '<br /><span id="attrib-grid-opt-commentH">'.$grid_records['H']['comment'].'</span>' : '').'</td>'."\n".
              ($show_attribute_stock_left == false ? (($show_attribute_stock == true && $show_attribute_stock_left == false && $grh_size == 1) ? 
           '<td id="attrib-grid-opt-availH" class="attrib-grid-opt-avail-headerH">Qty Avail</td>': '') : '') .
-            '</tr>'."\n". ($grh_size > 1 ?
+            '</tr>'."\n". ($grh_size >= 1 ?
             '<tr>' .
             '  <td id="attrib-grid-opt-nameV">' . $grid_records['V']['name'] . 
             '  </td>'."\n" : ''); //JT modification
@@ -450,8 +451,8 @@ class attributes_grid_products extends base {
                           .'</span>' . ($grh_size > 1 ? '' : '</td><td>' );
                 }
                 $this->_attrib_grid .=  zen_draw_input_field('product_id['.$products_attribs_id.']', '', 'size="3" value="0"').
-                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['H']['id'].']', (int)$grid_records['H']['options'][$grh]['id']).
-                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.$grid_records['V']['id'].']', (int)$grid_records['V']['options'][$grv]['id']);
+                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.(int)$grid_records['H']['id'].']', (int)$grid_records['H']['options'][$grh]['id']).
+                    zen_draw_hidden_field('attribs['.$products_attribs_id.']['.(int)$grid_records['V']['id'].']', (int)$grid_records['V']['options'][$grv]['id']);
 
                 if ($show_attribute_stock == true && $show_attribute_stock_left == false) {
                   $this->_attrib_grid .= ($grh_size > 1 ? '' : '</td><td>' ) . ' <span class="attrb-stock-right">'.
