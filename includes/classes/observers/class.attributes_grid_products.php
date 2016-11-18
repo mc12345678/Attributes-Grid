@@ -56,7 +56,7 @@ class attributes_grid_products extends base {
 
     global $products_options;
     
-    if ($products_options->RecordCount() == 1 && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_GRID) {
+    if ($products_options->RecordCount() == 1 && $products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID) {
       array_pop($options_name);
       array_pop($options_menu);
       array_pop($options_comment);
@@ -100,8 +100,46 @@ class attributes_grid_products extends base {
       /* Attributes Grid format
       /* 1 of 2
       /****************************************************/
-// PRODUCTS_OPTIONS_TYPE_GRID is the ID for the GRID option
-      if (!defined('PRODUCTS_OPTIONS_TYPE_GRID')) {// || !defined('CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED') || CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED != 'true') {
+// PRODUCTS_OPTIONS_TYPE_GRID was the ID for the GRID option
+// PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID is the new ID for the GRID option
+      if (defined('PRODUCTS_OPTIONS_TYPE_GRID') && !defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID')) {
+          $old_configuration_key = 'PRODUCTS_OPTIONS_TYPE_GRID';
+          $new_configuration_key = 'PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID';
+          
+          $sql2_query = "SELECT * FROM " . TABLE_CONFIGURATION . " WHERE configuration_key = :configuration_key:";
+          
+          $sql2_query = $db->bindVars($sql2_query, ':configuration_key:', $old_configuration_key, 'string');
+          
+          $sql2 = $db->Execute($sql2_query, false, false, 0, true);
+          unset($sql2_query);
+
+          $last_modified = 'NULL';
+          $date_added = 'now()';
+
+          $sql = "INSERT INTO " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value,
+      configuration_description, configuration_group_id, sort_order, last_modified, date_added, use_function, set_function)
+        
+      VALUES
+      (:configuration_title:, :configuration_key:, :configuration_value:, 
+        :configuration_description:,
+        :configuration_group_id:, :sort_order:, :last_modified:, :date_added:, :use_function:, :set_function:);";
+          $sql = $db->bindVars($sql, ':configuration_title:', $sql2->fields['configuration_title'], 'string');
+          $sql = $db->bindVars($sql, ':configuration_key:', $new_configuration_key, 'string');
+          $sql = $db->bindVars($sql, ':configuration_value:', $sql2->fields['configuration_value'], 'integer');
+          $sql = $db->bindVars($sql, ':configuration_description:', $sql2->fields['configuration_description'], 'string');
+          $sql = $db->bindVars($sql, ':configuration_group_id:', $sql2->fields['configuration_group_id'], 'integer');
+          $sql = $db->bindVars($sql, ':sort_order:', $sql2->fields['sort_order'], 'integer');
+          $sql = $db->bindVars($sql, ':last_modified:', $last_modified, (($last_modified == 'now()' || $last_modified == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':date_added:', $date_added, (($date_added == 'now()' || $date_added == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':use_function:', $sql2->fields['use_function'], (($use_function == 'now()' || $use_function == 'NULL') ? 'noquotestring' : 'string'));
+          $sql = $db->bindVars($sql, ':set_function:', $sql2->fields['set_function'], (($set_function == 'now()' || $set_function == 'NULL') ? 'noquotestring' : 'string'));
+
+          $db->Execute($sql);
+
+          define('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID', $sql2->fields['configuration_value']);
+      }
+      
+      if (!defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID')) {// || !defined('CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED') || CONFIG_ATTRIBUTE_OPTION_GRID_INSTALLED != 'true') {
         $products_options_types_name = 'Grid';
 
         $sql = "SELECT products_options_types_name, products_options_types_id FROM " . TABLE_PRODUCTS_OPTIONS_TYPES . " WHERE 
@@ -136,7 +174,7 @@ class attributes_grid_products extends base {
         if($result !== false /*&& $result->fields['products_options_types_name'] !=  ''*/ ){
 // PRODUCT_TYPE_ATTRIBUTE_OPTION_GRID was the "old" version.
           $configuration_title = 'Selection list product option type (Grid)';
-          $configuration_key = 'PRODUCTS_OPTIONS_TYPE_GRID';
+          $configuration_key = 'PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID';
           $configuration_value = $resultGID;
           $configuration_description = 'Numeric value of the grid product option type used for SBA';
           $configuration_group_id = 6;
@@ -168,7 +206,7 @@ class attributes_grid_products extends base {
           $db->Execute($sql);
         }
 
-        define('PRODUCTS_OPTIONS_TYPE_GRID', $resultGID);
+        define('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID', $resultGID);
       }
 
       $sql     = "select patrib.options_id, popt.products_options_type 
@@ -189,7 +227,7 @@ class attributes_grid_products extends base {
       $check_grid = false;
       while(!$pr_attr_sba->EOF) {
         switch($pr_attr_sba->fields['products_options_type']) {
-          case PRODUCTS_OPTIONS_TYPE_GRID:  //GRID exists
+          case PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID:  //GRID exists
             $check_grid = true;
 
             break 2; // Exits the switch and the while loop.  No need to stay in the loop if already identified that the grid attribute exists.
@@ -214,7 +252,7 @@ class attributes_grid_products extends base {
             $options_order_by;
 
         $sql = $db->bindVars($sql, ':products_id:', $_GET['products_id'], 'integer');
-        $sql = $db->bindVars($sql, ':products_options_type:', PRODUCTS_OPTIONS_TYPE_GRID, 'integer');
+        $sql = $db->bindVars($sql, ':products_options_type:', PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID, 'integer');
         $sql = $db->bindVars($sql, ':languages_id:', $_SESSION['languages_id'], 'integer');
         $products_options_names2 = $db->Execute($sql);
 
@@ -511,7 +549,7 @@ class attributes_grid_products extends base {
 /* Attributes Grid format
 /* 2 of 2
 /****************************************************/
-      case ($products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_GRID): // GRID LAYOUT
+      case ($products_options_names_fields['products_options_type'] == PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID): // GRID LAYOUT
         //Only show on the first attribute
         if (zen_not_null($this->_attrib_grid)) {
           $options_html_id[] = 'grid-attrib-' . $products_options_names_fields['products_options_id'];;

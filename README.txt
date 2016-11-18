@@ -1,5 +1,5 @@
 Product Attribute Grid
-Version 1.3.2
+Version 1.3.3
 ZenCart 1.5
 ZenCart 1.5.4, 1.5.5
 
@@ -74,6 +74,11 @@ Files included in this install are:
 ==============================
 CHANGELOG
 ==============================
+
+1.3.3 11/17/16 - mc12345678 McNumbers Ware:
+        - Modify the grid option name constant to the designation set by Edit Orders
+	  to resolve issues identified such as identified at: 
+	  https://www.zen-cart.com/showthread.php?85649-Product-Attribute-Grid&p=1243256#post1243256
 
 1.3.2 11/04/16 - mc12345678 McNumbers Ware:
         - Correct visual display when any one or more option name has only one option value.
