@@ -1,5 +1,5 @@
 Product Attribute Grid
-Version 1.3.3
+Version 1.3.4
 ZenCart 1.5
 ZenCart 1.5.4, 1.5.5
 
@@ -74,6 +74,11 @@ Files included in this install are:
 ==============================
 CHANGELOG
 ==============================
+
+1.3.4 12/19/16 - mc12345678 McNumbers Ware:
+          Changes made to support SBA back in version 1.3.2 prevented proper operation if Stock By Attributes was not
+	  installed.  This has been corrected in this version.
+	  Modified the included attributes.php file to incorporate changes made to Stock By Attributes and Attribute Image Swap.
 
 1.3.3 11/17/16 - mc12345678 McNumbers Ware:
         - Modify the grid option name constant to the designation set by Edit Orders

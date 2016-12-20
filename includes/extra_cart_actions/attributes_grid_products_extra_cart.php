@@ -16,11 +16,12 @@ $renumber = false; // $renumber = true or false
 
 switch ($_GET['action']) {
     case 'add_product':
-        if (isset($_POST['product_id']) && is_array($_POST['product_id']) && (isset($_SESSION['pwas_class2']) 
+        if (isset($_POST['product_id']) && is_array($_POST['product_id']) && (isset($_SESSION['pwas_class2'])
                          && method_exists($_SESSION['pwas_class2'], 'zen_product_is_sba')
                          && is_callable(array($_SESSION['pwas_class2'], 'zen_product_is_sba'))
-                          ? $_SESSION['pwas_class2']->zen_product_is_sba(zen_get_prid($_POST['products_id'][$i]), true) 
-                          : function_exists('zen_product_is_sba') && zen_product_is_sba(zen_get_prid($_POST['products_id'][$i]), true) )) {
+                         && $_SESSION['pwas_class2']->zen_product_is_sba(zen_get_prid($_POST['products_id'][$i]), true)
+                         || function_exists('zen_product_is_sba') && zen_product_is_sba(zen_get_prid($_POST['products_id'][$i]), true)
+                           ? false : true)) {
             
             if ($_SESSION['cart']->display_debug_messages) $messageStack->add_session('header', 'A: FUNCTION ' . __FUNCTION__, 'caution');
 // Here can add product attributes grid check and prepare to iterate through the "products" that have been added.
