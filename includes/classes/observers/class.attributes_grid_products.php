@@ -30,7 +30,12 @@ class attributes_grid_products extends base {
     $attachNotifier = array();
     $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_DEFAULT_SWITCH'; 
     $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_START_OPTIONS_LOOP'; 
-    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT'; 
+    $attachNotifier[] = 'NOTIFY_ATTRIBUTES_MODULE_OPTION_BUILT';
+    $attachNotifier[] = 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_INFO';
+    $attachNotifier[] = 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_MUSIC_INFO';
+    $attachNotifier[] = 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_GENERAL_INFO';
+    $attachNotifier[] = 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_PRODUCT_INFO';
+    $attachNotifier[] = 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_FREE_SHIPPING_INFO';
 
     $this->attach($this, $attachNotifier);
     
@@ -573,6 +578,101 @@ class attributes_grid_products extends base {
     }
   }
 
+  /* 
+   * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_INFO
+   */
+  function updateNotifyMainTemplateVarsExtraProductInfo(&$callingClass, $notifier) {
+    global $products_qty_box_status;
+    
+    if ($this->hideQtyBox((int)$_GET['products_id'])) {
+      $products_qty_box_status = 0;
+    }
+  }
+  
+  /*
+   * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_MUSIC_INFO
+   */
+  function updateNotifyMainTemplateVarsExtraProductMusicInfo(&$callingClass, $notifier) {
+    global $products_qty_box_status;
+    
+    if ($this->hideQtyBox((int)$_GET['products_id'])) {
+      $products_qty_box_status = 0;
+    }
+  }
+  
+  /*
+   * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_GENERAL_INFO
+   */
+  function updateNotifyMainTemplateVarsExtraDocumentGeneralInfo(&$callingClass, $notifier) {
+    global $products_qty_box_status;
+    
+    if ($this->hideQtyBox((int)$_GET['products_id'])) {
+      $products_qty_box_status = 0;
+    }
+  }
+  
+  /*
+   * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_PRODUCT_INFO
+   */
+  function updateNotifyMainTemplateVarsExtraDocumentProductInfo(&$callingClass, $notifier) {
+    global $products_qty_box_status;
+    
+    if ($this->hideQtyBox((int)$_GET['products_id'])) {
+      $products_qty_box_status = 0;
+    }
+  }
+  
+  /*
+   * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_FREE_SHIPPING_INFO
+   */
+  function updateNotifyMainTemplateVarsExtraProductFreeShippingInfo(&$callingClass, $notifier) {
+    global $products_qty_box_status;
+    
+    if ($this->hideQtyBox((int)$_GET['products_id'])) {
+      $products_qty_box_status = 0;
+    }
+  }
+ 
+  /*
+   * Identifies if the quantity box is expected to be hidden.
+   */
+  function hideQtyBox($products_id) {
+    // Function is included to support amplified "reasoning" for showing the box, such as potentially adding a configuration
+    //  switch if so desired.  This will simplify updated coding.
+    
+    $hideBox = $this->hasGrid((int)$_GET['products_id']));
+
+    if (defined('ATTRIBUTES_ENABLED_GRID_QTY_BOX')) {
+      $hideBox = $hideBox && !(bool)ATTRIBUTES_ENABLED_GRID_QTY_BOX;
+    }
+    
+    return $hideBox;
+  }
+  
+  /*
+   * returns true/false based on if $products_id identifies a product that has a product attribute grid type attribute.
+   */
+  function hasGrid($products_id) {
+    global $db;
+    
+    if (!defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID')) {
+      return false;
+    }
+    
+    $sql = 'SELECT products_attributes_id FROM ' . TABLE_PRODUCTS_ATTRIBUTES . ', ' . TABLE_PRODUCTS_OPTIONS . ' WHERE products_id = :products_id: AND options_id = products_options_id AND products_options_type = :option_type_attribute_grid: LIMIT 1';
+    $sql = $db->bindVars($sql, ':products_id:', $products_id, 'integer');
+    $sql = $db->bindVars($sql, ':option_type_attribute_grid:', PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID, 'integer');
+    
+    // Support for ZC 1.5.6 and up to bypass the cache on query.
+    if (method_exists($db, 'ExecuteNoCache')) {
+      $hasGrid_result = $db->ExecuteNoCache($sql);
+    } else {
+      $hasGrid_result = $db->Execute($sql, false, false, 0, true);
+    }
+    
+    return (!$hasGrid_result->EOF); // If there is a count other than 0 then there is a grid attribute.
+  }
+  
   /*
    * Return the alternate text if prices should not be shown otherwise return the text for the price.
    */
@@ -647,5 +747,26 @@ class attributes_grid_products extends base {
       
       $this->updateNotifyAttributesModuleDefaultSwitch($callingClass, $notifier, $paramsArray, $options_name, $options_menu, $options_comment, $options_comment_position, $options_html_id);
     }
+
+    if ($notifier == 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_INFO') {
+      $this->updateNotifyMainTemplateVarsExtraProductInfo($callingClass, $notifier);
+    }
+
+    if ($notifier == 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_MUSIC_INFO') {
+      $this->updateNotifyMainTemplateVarsExtraProductMusicInfo($callingClass, $notifier);
+    }
+
+    if ($notifier == 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_GENERAL_INFO') {
+      $this->updateNotifyMainTemplateVarsExtraDocumentGeneralInfo($callingClass, $notifier);
+    }
+
+    if ($notifier == 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_PRODUCT_INFO') {
+      $this->updateNotifyMainTemplateVarsExtraDocumentProductInfo($callingClass, $notifier);
+    }
+
+    if ($notifier == 'NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_FREE_SHIPPING_INFO') {
+      $this->updateNotifyMainTemplateVarsExtraProductInfo($callingClass, $notifier);
+    }
+    
   } //end update function - mc12345678
 } //end class - mc12345678
