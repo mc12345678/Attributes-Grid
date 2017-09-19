@@ -93,9 +93,17 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
 ?>
             <?php
     $display_qty = (($flag_show_product_info_in_cart_qty == 1 and $_SESSION['cart']->in_cart($_GET['products_id'])) ? '<p>' . PRODUCTS_ORDER_QTY_TEXT_IN_CART . $_SESSION['cart']->get_quantity($_GET['products_id']) . '</p>' : '');
-            if ($products_qty_box_status == 0 or $products_quantity_order_max== 1) {
+            if ($products_qty_box_status == 0 or $products_quantity_order_max== 1 /* BOF Add for Products Attributes Grid */ or (defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID') && method_exists($attributes_grid_products_observe, 'hasGrid') && $attributes_grid_products_observe->hasGrid((int)$_GET['products_id']) && method_exists($attributes_grid_products_observe, 'hideQuantityBox') && $attributes_grid_products_observe->hideQuantityBox((int)$_GET['products_id']))/* EOF Add for Products Attributes Grid */) {
               // hide the quantity box and default to 1
               $the_button = '<input type="hidden" name="cart_quantity" value="1" />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
+              /* BOF Add for Products Attributes Grid */
+            } elseif (defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID') && method_exists($attributes_grid_products_observe, 'hasGrid') && $attributes_grid_products_observe->hasGrid((int)$_GET['products_id']) && method_exists($attributes_grid_products_observe, 'showOne') && $attributes_grid_products_observe->showOne((int)$_GET['products_id'])) {
+              // show the quantity box with a default value of 1
+    $the_button = PRODUCTS_ORDER_QTY_TEXT . '<input type="text" name="cart_quantity" value="1" maxlength="6" size="4" /><br />' . zen_get_products_quantity_min_units_display((int)$_GET['products_id']) . '<br />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
+            } elseif (defined('PRODUCTS_OPTIONS_TYPE_ATTRIBUTE_GRID') && method_exists($attributes_grid_products_observe, 'hasGrid') && $attributes_grid_products_observe->hasGrid((int)$_GET['products_id']) && method_exists($attributes_grid_products_observe, 'buyNow') && $attributes_grid_products_observe->buyNow((int)$_GET['products_id']) && method_exists($attributes_grid_products_observe, 'get_buy_now_qty')) {
+              // show the quantity box with a predetermined value. This perhaps could be merged with the above to simplify editing and operation.
+    $the_button = PRODUCTS_ORDER_QTY_TEXT . '<input type="text" name="cart_quantity" value="' . ($attributes_grid_products_observe->get_buy_now_qty($_GET['products_id'])) . '" maxlength="6" size="4" /><br />' . zen_get_products_quantity_min_units_display((int)$_GET['products_id']) . '<br />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
+              /* EOF Add for Products Attributes Grid */
             } else {
               // show the quantity box
     $the_button = PRODUCTS_ORDER_QTY_TEXT . '<input type="text" name="cart_quantity" value="' . (zen_get_buy_now_qty($_GET['products_id'])) . '" maxlength="6" size="4" /><br />' . zen_get_products_quantity_min_units_display((int)$_GET['products_id']) . '<br />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
