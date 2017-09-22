@@ -582,10 +582,21 @@ class attributes_grid_products extends base {
    * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_INFO
    */
   function updateNotifyMainTemplateVarsExtraProductInfo(&$callingClass, $notifier) {
-    global $products_qty_box_status;
-    
+    global $products_qty_box_status, $products_get_buy_now_qty;
+
+    // Initialize prodHasGrid to be false so that will bypass below code.
+    $this->prodHasGrid = false;
+
+    // If to hide the quantity box, then do so.
     if ($this->hideQtyBox((int)$_GET['products_id'])) {
       $products_qty_box_status = 0;
+    } else if ($this->prodHasGrid) {
+      // Product has a grid attribute, but it is not specifically requested by this code to hide the quantity box
+      //   and instead to adjust the quantity to be displayed as the default entry.
+      if (isset($products_get_buy_now_qty)) {
+        // Default to a value of 1; however, this could be modified to support some other direction/code;
+        $products_get_buy_now_qty = 1;
+      }
     }
   }
   
@@ -593,10 +604,21 @@ class attributes_grid_products extends base {
    * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_MUSIC_INFO
    */
   function updateNotifyMainTemplateVarsExtraProductMusicInfo(&$callingClass, $notifier) {
-    global $products_qty_box_status;
-    
+    global $products_qty_box_status, $products_get_buy_now_qty;
+
+    // Initialize prodHasGrid to be false so that will bypass below code.
+    $this->prodHasGrid = false;
+
+    // If to hide the quantity box, then do so.
     if ($this->hideQtyBox((int)$_GET['products_id'])) {
       $products_qty_box_status = 0;
+    } else if ($this->prodHasGrid) {
+      // Product has a grid attribute, but it is not specifically requested by this code to hide the quantity box
+      //   and instead to adjust the quantity to be displayed as the default entry.
+      if (isset($products_get_buy_now_qty)) {
+        // Default to a value of 1; however, this could be modified to support some other direction/code;
+        $products_get_buy_now_qty = 1;
+      }
     }
   }
   
@@ -604,10 +626,21 @@ class attributes_grid_products extends base {
    * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_GENERAL_INFO
    */
   function updateNotifyMainTemplateVarsExtraDocumentGeneralInfo(&$callingClass, $notifier) {
-    global $products_qty_box_status;
-    
+    global $products_qty_box_status, $products_get_buy_now_qty;
+
+    // Initialize prodHasGrid to be false so that will bypass below code.
+    $this->prodHasGrid = false;
+
+    // If to hide the quantity box, then do so.
     if ($this->hideQtyBox((int)$_GET['products_id'])) {
       $products_qty_box_status = 0;
+    } else if ($this->prodHasGrid) {
+      // Product has a grid attribute, but it is not specifically requested by this code to hide the quantity box
+      //   and instead to adjust the quantity to be displayed as the default entry.
+      if (isset($products_get_buy_now_qty)) {
+        // Default to a value of 1; however, this could be modified to support some other direction/code;
+        $products_get_buy_now_qty = 1;
+      }
     }
   }
   
@@ -615,10 +648,21 @@ class attributes_grid_products extends base {
    * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_DOCUMENT_PRODUCT_INFO
    */
   function updateNotifyMainTemplateVarsExtraDocumentProductInfo(&$callingClass, $notifier) {
-    global $products_qty_box_status;
-    
+    global $products_qty_box_status, $products_get_buy_now_qty;
+
+    // Initialize prodHasGrid to be false so that will bypass below code.
+    $this->prodHasGrid = false;
+
+    // If to hide the quantity box, then do so.
     if ($this->hideQtyBox((int)$_GET['products_id'])) {
       $products_qty_box_status = 0;
+    } else if ($this->prodHasGrid) {
+      // Product has a grid attribute, but it is not specifically requested by this code to hide the quantity box
+      //   and instead to adjust the quantity to be displayed as the default entry.
+      if (isset($products_get_buy_now_qty)) {
+        // Default to a value of 1; however, this could be modified to support some other direction/code;
+        $products_get_buy_now_qty = 1;
+      }
     }
   }
   
@@ -626,10 +670,21 @@ class attributes_grid_products extends base {
    * NOTIFY_MAIN_TEMPLATE_VARS_EXTRA_PRODUCT_FREE_SHIPPING_INFO
    */
   function updateNotifyMainTemplateVarsExtraProductFreeShippingInfo(&$callingClass, $notifier) {
-    global $products_qty_box_status;
-    
+    global $products_qty_box_status, $products_get_buy_now_qty;
+
+    // Initialize prodHasGrid to be false so that will bypass below code.
+    $this->prodHasGrid = false;
+
+    // If to hide the quantity box, then do so.
     if ($this->hideQtyBox((int)$_GET['products_id'])) {
       $products_qty_box_status = 0;
+    } else if ($this->prodHasGrid) {
+      // Product has a grid attribute, but it is not specifically requested by this code to hide the quantity box
+      //   and instead to adjust the quantity to be displayed as the default entry.
+      if (isset($products_get_buy_now_qty)) {
+        // Default to a value of 1; however, this could be modified to support some other direction/code;
+        $products_get_buy_now_qty = 1;
+      }
     }
   }
  
@@ -639,11 +694,47 @@ class attributes_grid_products extends base {
   function hideQtyBox($products_id) {
     // Function is included to support amplified "reasoning" for showing the box, such as potentially adding a configuration
     //  switch if so desired.  This will simplify updated coding.
+    global $products_get_buy_now_qty;
     
-    $hideBox = $this->hasGrid((int)$_GET['products_id']));
+    $hideBox = false;
 
-    if (defined('ATTRIBUTES_ENABLED_GRID_QTY_BOX')) {
-      $hideBox = $hideBox && !(bool)ATTRIBUTES_ENABLED_GRID_QTY_BOX;
+    // Modify the display of the quantity box for product identified to have the grid attribute.
+    if ($this->hasGrid((int)$_GET['products_id']))) {
+      $this->prodHasGrid = true; // Internally store that the product has a grid so that query can be bypassed.
+
+      // The template has not been arranged to support control of the quantity, therefore, need to disable to box and use a default of 1.
+      if (!isset($products_get_buy_now_qty)) {
+        $hideBox = true;
+      }
+
+      // Entering this area of code, $hideBox is expected to be set to the state of the ability to modify the "default" quantity presented.
+      //   Idea is that if it is not possible to affect the quantity, then the box needs to be hidden regardless of the desired state.
+      if (defined('ATTRIBUTES_ENABLED_GRID_QTY_BOX')) {
+        switch (true) {
+          // Want to display the box; however, the controls are not present to allow it
+          case ATTRIBUTES_ENABLED_GRID_QTY_BOX === 'true' && $hideBox: 
+            $hideBox = true;
+            break;
+          // The controls exist to display the quantity box and it is desired to display it.
+          case ATTRIBUTES_ENABLED_GRID_QTY_BOX === 'true':
+            $hideBox = false;
+            break;
+          // The controls are not available to display the box and it is desired to disable it, so disable it.
+          case ATTRIBUTES_ENABLED_GRID_QTY_BOX === 'false' && $hideBox:
+            $hideBox = true;
+            break;
+          // It is possible to disable the quantity box and it is desired for it to be disabled, so disable it.
+          case ATTRIBUTES_ENABLED_GRID_QTY_BOX === 'false':
+            $hideBox = true;
+            break
+          // This is a third or more option for the ATTRIBUTES_ENABLED_GRID_QTY_BOX, with the thought of just following the setting
+          //   assigned for the product, so as far as "asking" for the box to be hidden, the condition here is not to try to hide
+          //   it and allow the quantity to be assigned as applicable/as necessary.
+          default:
+            $hideBox = false;
+            break;
+        }
+      }
     }
     
     return $hideBox;
